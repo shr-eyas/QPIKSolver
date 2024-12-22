@@ -113,75 +113,75 @@ extern bool saveThePerformace;
 class QPIKSolver
 {
 public:
-    void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint);
-    void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
-    void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq);
+    	void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint);
+    	void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
+    	void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq);
 	void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq,	VectorXd UDq,VectorXd LDq);
-    void FinalizeInitialization();
+    	void FinalizeInitialization();
 	void setJacobian(int index, MatrixXd Jacobian);
 	void setJacobianLinks(int index, JacobianS Jacobian);
 	void setDesired(int index, VectorXd DesiredEnd);
 	void setState(int index, VectorXd q, VectorXd Dq);
 	void getState(int index, VectorXd &Dq);
-    void getGamma(double &gamma);
+    	void getGamma(double &gamma);
 	void Solve();
 
 private:
-    void        ERROR();
-    void        PrintRobot(RobotModel Robot);
-    VectorXd	OmegaProjector(VectorXd Input, VectorXd Upper, VectorXd Lower);
-    inline void ConstructVel();
-    inline void ConstructBoundariesVel();
-    inline void	ConstructCollisionBoundaries();
-    inline void restartTheRobots();
-    inline void CheckFeasibility(VectorXd U);
-    inline void loadDefaultData();
+    	void        ERROR();
+    	void        PrintRobot(RobotModel Robot);
+    	VectorXd	OmegaProjector(VectorXd Input, VectorXd Upper, VectorXd Lower);
+    	inline void ConstructVel();
+    	inline void ConstructBoundariesVel();
+    	inline void	ConstructCollisionBoundaries();
+    	inline void restartTheRobots();
+    	inline void CheckFeasibility(VectorXd U);
+	inline void loadDefaultData();
 
-    double dt_;
-    SolverType SolverType_;
-    SolverLevel SolverLevel_;
-    SolverNumerical SolverNumerical_;
-    RobotModel *Robots_;
+	double dt_;
+	SolverType SolverType_;
+	SolverLevel SolverLevel_;
+	SolverNumerical SolverNumerical_;
+	RobotModel *Robots_;
 
-    int NumOfRobots_;
-    int ConstraintDimension_;
-    int QDimension_;
-
-    MatrixXd W_;
+	int NumOfRobots_;
+	int ConstraintDimension_;
+	int QDimension_;
+	
+	MatrixXd W_;
 	MatrixXd M_;
 	MatrixXd J_;
 	VectorXd b_;
 	VectorXd POmega_;
-
+	
 	VectorXd UPlus_;
 	VectorXd UMinus_;
 	VectorXd ThetaPlus_;
 	VectorXd ThetaMinus_;
-
+	
 	MatrixXd I_;
 	MatrixXd HandleMI_;
 	VectorXd HandleProjection;
-
+	
 	VectorXd U_;
 	VectorXd DU_;
 
 	VectorXd ConstUpper_;
 	VectorXd ConstLower_;
-
+	
 	double muP_;
 	double etaP_;
-
-    SVMGrad     svmBoundary_;
-
+	
+	SVMGrad     svmBoundary_;
+	
 	double		Gamma_;
 	VectorXd	DGamma_;
-    bool        considerCollision;
-    double      lambda;
-
+	bool        considerCollision;
+	double      lambda;
+	
 	bool SuperConstraint_;
-
+	
 	double t1;
-
+	
 	clock_t duration;
 
 	MatrixXd GQP_;
@@ -189,19 +189,19 @@ private:
 	MatrixXd CEQP_;
 	VectorXd ce0QP_;
 	VectorXd XQP_;
-
+	
 	myObjectdata dataObject;
-
+	
 	// nlopt::opt *opt;
-
+	
 	std::vector<double> lb_;
 	std::vector<double> ub_;
+	
+	ofstream myfile;
 
-    ofstream myfile;
-
-    SGF::SavitzkyGolayFilter *filter;
-    SGF::Vec inp;
-    SGF::Vec outp;
-
-    int retCode;
+	SGF::SavitzkyGolayFilter *filter;
+	SGF::Vec inp;
+	SGF::Vec outp;
+	
+	int retCode;
 };
