@@ -167,3 +167,10 @@ void QPIKSolver::PrintRobot(RobotModel Robot)
 	cout << "UDDp: " << endl; cout << Robot.UDDq << endl;
 	cout << "UDDp: " << endl; cout << Robot.UDDq << endl;
 }
+
+void QPIKSolver::loadDefaultData()
+{
+    for (int i = 0; i < DimensionConstraint_; i++)
+        for (int j = 0; j < DimensionQ_; j++)
+            params.J[i+j*DimensionConstraint_] = CEQP_(i, j);
+}
