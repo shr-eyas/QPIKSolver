@@ -2,11 +2,21 @@
 
 QPIKSolver is a software package designed to solve the centralized inverse kinematic problem, formulated as a quadratic program (QP) and solved in real-time. This repository includes all necessary packages and instructions to get started.
 
+##  Dependencies
+Eigen http://eigen.tuxfamily.org/index.php?title=Main_Page
+SVMGrad https://github.com/nbfigueroa/SVMGrad.git
+SGDifferentiation https://github.com/epfl-lasa/sg_differentiation.git
+Nlopt http://ab-initio.mit.edu/wiki/index.php/NLopt
+CVXGEN http://cvxgen.com/docs/index.html 
+
 ## Features
 
-- Real-time solving of inverse kinematic problems
-- Support for multiple numerical optimization solvers
-- Modular design for easy extension and customization
+- Handling the kinematic constraints of the robots.
+- Inequity constraint (We used it for considering the self-collision avoidance (SCA) constraints).
+- This package provides three options for solving the inverse kinematic:
+  - LVI-based primal-dual Dynamical system solution: http://ieeexplore.ieee.org/abstract/document/1470152/
+  - Nlopt
+  - CVXgen
 
 ## Installation
 
@@ -47,22 +57,12 @@ After building the project, you can run the solver using the following command:
 ./QPIK
 ```
 
-## Directory Structure
+## References
 
-- `src/`: Contains the source code for the solver.
-- `include/`: Contains the header files.
-- `external/`: Contains external dependencies.
-- `build/`: Directory for build files.
-- `CMakeLists.txt`: CMake configuration file.
-
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-## Contact
-
-For any questions or suggestions, please open an issue or contact the repository owner at shreyaskumar.1102@gmail.com.
+@article{mirrazavi2018unified,
+  title={A unified framework for coordinated multi-arm motion planning},
+  author={Mirrazavi Salehian, Seyed Sina and Figueroa, Nadia and Billard, Aude},
+  journal={The International Journal of Robotics Research},
+  pages={0278364918765952},
+  publisher={SAGE Publications Sage UK: London, England}
+}
