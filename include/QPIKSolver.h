@@ -24,7 +24,7 @@
 #include <vector>
 #include "sg_filter.h"
 #include <omp.h>
-// #include "svm_grad.h"
+#include "svm_grad.h"
 #include <tinyxml2.h>
 
 using namespace Eigen;
@@ -171,7 +171,7 @@ private:
 	double muP_;
 	double etaP_;
 
-    // SVMGrad::SVMGrad     svmBoundary_;
+    SVMGrad     svmBoundary_;
 
 	double		Gamma_;
 	VectorXd	DGamma_;

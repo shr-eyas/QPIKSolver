@@ -1,36 +1,33 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Project name
 project(QPIK)
 
-# Set C++ standard
+# Set the C++ standard
 set(CMAKE_CXX_STANDARD 11)
 
-# Find BLAS and LAPACK
-# find_package(BLAS REQUIRED)
-# find_package(LAPACK REQUIRED)
+# Find Armadillo package
+find_package(Armadillo REQUIRED)
 
-# Debug: Print the detected BLAS and LAPACK libraries
-# message(STATUS "BLAS libraries: ${BLAS_LIBRARIES}")
-# message(STATUS "LAPACK libraries: ${LAPACK_LIBRARIES}")
-
-# Add the executable target
+# Add the executable with source files
 add_executable(QPIK
     src/runSolver.cpp
     src/QPIKSolver.cpp
     external/sg_differentiation/src/sg_filter.cpp
-    # external/svm_grad/src/svm_grad.cpp 
+    external/svm_grad/src/svm_grad.cpp
 )
 
-# Link BLAS and LAPACK libraries to the target
-# target_link_libraries(QPIK PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+# Link libraries
+target_link_libraries(QPIK PRIVATE
+    armadillo
+)
 
-# Include directories for the target
+# Include directories
 target_include_directories(QPIK PRIVATE
     ${PROJECT_SOURCE_DIR}/include
-    # ${PROJECT_SOURCE_DIR}/external/svm_grad/include
+    ${PROJECT_SOURCE_DIR}/external/svm_grad/include
     ${PROJECT_SOURCE_DIR}/external/sg_differentiation/include
+    ${ARMADILLO_INCLUDE_DIRS}
 )
 
-# Ensure the C++11 standard is enabled
+# Set required C++ features
 target_compile_features(QPIK PRIVATE cxx_std_11)
