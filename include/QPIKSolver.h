@@ -113,28 +113,28 @@ extern bool saveThePerformace;
 class QPIKSolver
 {
 public:
-    	void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint);
-    	void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
-    	void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq);
+    void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint);
+    void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
+    void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq);
 	void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq,	VectorXd UDq,VectorXd LDq);
-    	void FinalizeInitialization();
+    void FinalizeInitialization();
 	void setJacobian(int index, MatrixXd Jacobian);
 	void setJacobianLinks(int index, JacobianS Jacobian);
 	void setDesired(int index, VectorXd DesiredEnd);
 	void setState(int index, VectorXd q, VectorXd Dq);
 	void getState(int index, VectorXd &Dq);
-    	void getGamma(double &gamma);
+    void getGamma(double &gamma);
 	void Solve();
 
 private:
-    	void        ERROR();
-    	void        PrintRobot(RobotModel Robot);
-    	VectorXd	OmegaProjector(VectorXd Input, VectorXd Upper, VectorXd Lower);
-    	inline void ConstructVel();
-    	inline void ConstructBoundariesVel();
-    	inline void	ConstructCollisionBoundaries();
-    	inline void restartTheRobots();
-    	inline void CheckFeasibility(VectorXd U);
+    void        ERROR();
+    void        PrintRobot(RobotModel Robot);
+    VectorXd	OmegaProjector(VectorXd Input, VectorXd Upper, VectorXd Lower);
+    inline void ConstructVel();
+    inline void ConstructBoundariesVel();
+    inline void	ConstructCollisionBoundaries();
+    inline void restartTheRobots();
+    inline void CheckFeasibility(VectorXd U);
 	inline void loadDefaultData();
 
 	double dt_;
