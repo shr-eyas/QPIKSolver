@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <time.h>
 #include <vector>
+#include "sg_filter.h"
 #include <tinyxml2.h>
 
 using namespace Eigen;
@@ -52,7 +53,7 @@ struct RobotModel {
     bool stateIsSet;                        // Boolean flag to check if the robot state is set
     int index;                              // Index of the robot in some list
     int numLinks;                           // Number of links in the robot's kinematic chain
-    int taskDOF;                     // Number of constraints in the inverse kinematics problem
+    int taskDOF;                            // Number of constraints in the inverse kinematics problem
 
     MatrixXd W;                             // Weight matrix used for optimization or Jacobian-related computations
     MatrixXd Jacobian;                      // Jacobian matrix (relates joint velocities to end-effector velocity)
@@ -111,7 +112,7 @@ class QPIKSolver
 {
 public:
     void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint);
-    void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
+    // void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
     void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq);
 	void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq,	VectorXd UDq,VectorXd LDq);
     void FinalizeInitialization();
@@ -141,8 +142,8 @@ private:
     RobotModel *Robots_;
 
     int NumOfRobots_;
-    int DimensionConstraint_;
-    int DimensionQ_;
+    int ConstraintDimension_;
+    int QDimension_;
 
     MatrixXd W_;
 	MatrixXd M_;
@@ -196,9 +197,9 @@ private:
 
     ofstream myfile;
 
-    // SGF::SavitzkyGolayFilter *filter;
-    // SGF::Vec inp;
-    // SGF::Vec outp;
+    SGF::SavitzkyGolayFilter *filter;
+    SGF::Vec inp;
+    SGF::Vec outp;
 
     int retCode;
 };

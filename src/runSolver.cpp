@@ -7,7 +7,7 @@ int main()
     int NumOfRobots = 2;      
     double dt = 0.01;         
     SolverType type = Numerical; 
-    SolverLevel level = VelocityLevel; 
+    SolverLevel level = AccelerationLevel; 
     bool SuperConstraint = true;  
 
     solver.Initialize(NumOfRobots, dt, type, level, SuperConstraint);
@@ -35,8 +35,8 @@ int main()
     LDDq << -5, -5;          
 
     // Initialize each robot
-    solver.InitializeRobot(0, numLinks, taskDOF, W, Uq, Lq, UDq, LDq);
-    solver.InitializeRobot(1, numLinks, taskDOF, W, Uq, Lq, UDq, LDq);
+    solver.InitializeRobot(0, numLinks, taskDOF, W, Uq, Lq, UDq, LDq, UDDq, LDDq);
+    solver.InitializeRobot(1, numLinks, taskDOF, W, Uq, Lq, UDq, LDq, UDDq, LDDq);
 
     return 0;
 }

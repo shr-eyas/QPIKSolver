@@ -4,6 +4,7 @@ IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 int order = 3;
 int winlen = 20;
+SGF::real sample_time = 0.002;
 
 int MaxNumOfRobots = 3;
 bool saveThePerformace = true;
@@ -66,7 +67,7 @@ void QPIKSolver::Initialize(int NumOfRobots, double dt, SolverType type, SolverL
     etaP_ = 0.9;
     SuperConstraint_ = SuperConstraint;
     SolverNumerical_ = CVXgen1;
-    if (saveThePerformace){	myfile.open ("IK_solver_performace_Dynamical.txt");}
+    if (saveThePerformace){	myfile.open ("build/IKSolverPerformaceDynamical.txt");}
 	considerCollision = false;
 }
 
@@ -88,7 +89,6 @@ void QPIKSolver::Initialize(int NumOfRobots, double dt, SolverType type, SolverL
 // 	considerCollision = true;
 //     lambda = 5;
 // }
-
 
 void QPIKSolver::InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq)
 {
@@ -186,9 +186,97 @@ void QPIKSolver::InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd 
     PrintRobot(Robots_[index]);
 }
 
+/*
+ * QDimension: Total number of joints across all robots.
+ * ConstraintDimension: Total task-space DOFs for all robots' end effectors.
+ */
+void QPIKSolver::FinalizeInitialization()
+{
+    int QDimension = 0;
+    for (int i=0; i<NumOfRobots_; i++)
+    {
+        QDimension = QDimension + Robots_[i].numLinks;
+    }
+    int ConstraintDimension = 0;
+    for (int i=0; i<NumOfRobots_; i++)
+    {
+        ConstraintDimension = ConstraintDimension + Robots_[i].taskDOF;
+    }
+
+    QDimension_ = QDimension;
+    ConstraintDimension_ = ConstraintDimension;
+
+    W_.resize(QDimension_, QDimension_);
+    W_.setZero();
+
+    J_.resize(ConstraintDimension_, QDimension_);
+    J_.setZero();
+
+    M_.resize(ConstraintDimension_ + QDimension_ + 1, ConstraintDimension_ + QDimension_ + 1);
+    M_.setZero();
+
+    HandleMI_.resize(ConstraintDimension_ + QDimension_ + 1, ConstraintDimension_ + QDimension_ + 1);
+    HandleMI_.setZero();
+
+    b_.resize(ConstraintDimension_ + QDimension_ + 1);
+    b_.setZero();
+
+    I_.resize(ConstraintDimension_ + QDimension_ + 1, ConstraintDimension_ + QDimension_ + 1); 
+    I_.setIdentity();
+
+    UPlus_.resize(ConstraintDimension_ + QDimension_ + 1);
+    UPlus_.setZero();
+
+    UMinus_.resize(ConstraintDimension_ + QDimension_ + 1);
+    UMinus_.setZero();
+
+    U_.resize(ConstraintDimension_ + QDimension_ + 1);
+    U_.setZero();
+
+    DU_.resize(ConstraintDimension_ + QDimension_ + 1);
+    DU_.setZero();  
+
+    POmega_.resize(ConstraintDimension_ + QDimension_ + 1);
+    POmega_.setZero();
+
+    HandleProjection.resize(ConstraintDimension_ + QDimension_ + 1);
+    HandleProjection.setZero();
+
+    CEQP_.resize(ConstraintDimension_, QDimension_);
+    CEQP_.setZero();
+
+    ce0QP_.resize(ConstraintDimension_);
+    ce0QP_.setZero();
+
+    XQP_.resize(QDimension_);
+    XQP_.setZero();
+
+    ThetaPlus_.resize(QDimension_);
+    ThetaPlus_.setZero();
+
+    ThetaMinus_.resize(QDimension_);
+    ThetaMinus_.setZero();
+
+    DGamma_.resize(QDimension_); 
+    DGamma_.setZero();
+
+    Gamma_ = 2;
+
+    ConstUpper_.resize(NumOfRobots_);
+    ConstLower_.resize(NumOfRobots_);
+
+    restartTheRobots();
+
+    filter= new SGF::SavitzkyGolayFilter(QDimension_, order, winlen, sample_time);
+	inp.resize(QDimension_);
+	outp.resize(QDimension_);
+	cout << "Constraint Dimension: " << ConstraintDimension_ << endl;
+	cout << "Q Dimension " << QDimension_ << endl;
+}
+
 inline void QPIKSolver::restartTheRobots()
 {
-	for(int i=0; i<NumOfRobots_; i++)
+	for (int i=0; i<NumOfRobots_; i++)
 	{
 		Robots_[i].jacobianIsSet = false;
 		Robots_[i].desiredPositionIsSet = false;
