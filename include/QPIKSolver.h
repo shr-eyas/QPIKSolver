@@ -127,6 +127,7 @@ private:
     VectorXd	OmegaProjector(VectorXd Input, VectorXd Upper, VectorXd Lower);
     inline void ConstructVel();
     inline void ConstructBoundariesVel();
+    inline void	ConstructCollisionBoundaries();
     inline void restartTheRobots();
     inline void CheckFeasibility(VectorXd U);
     inline void loadDefaultData();
@@ -165,6 +166,8 @@ private:
 	double muP_;
 	double etaP_;
 
+    // SVMGrad     svmBoundary_;
+
 	double		Gamma_;
 	VectorXd	DGamma_;
     bool        considerCollision;
@@ -186,8 +189,8 @@ private:
 
 	// nlopt::opt *opt;
 
-	// std::vector<double> lb_;
-	// std::vector<double> ub_;
+	std::vector<double> lb_;
+	std::vector<double> ub_;
 
     ofstream myfile;
 
