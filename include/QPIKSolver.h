@@ -1,12 +1,12 @@
 /*
  * This code was developed by Shreyas.
+ * Email: shreyaskumar.1102@gmail.com
  * It is based on concepts and algorithms from the work of Sina Mirrazavi
  * at the Learning Algorithms and Systems Laboratory, EPFL, Switzerland.
  *
  * The original code was licensed under the GNU General Public License (GPL v2),
  * but this code is an independent implementation and does not directly modify
  * or distribute the original code.
- *
  *
  * For more information on the original code, please refer to:
  * Author: Sina Mirrazavi
