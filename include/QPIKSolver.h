@@ -71,7 +71,7 @@ struct RobotModel {
     VectorXd q;                             // Current joint positions (configuration of the robot)
     VectorXd Dq;                            // Current joint velocities
 
-    JacobianS JacobianR;                    // Jacobian for a specific robot (likely defined earlier)
+    JacobianS JacobianR;                   
 };
 
 /*
