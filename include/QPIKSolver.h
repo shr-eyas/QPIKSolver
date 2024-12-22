@@ -23,6 +23,8 @@
 #include <time.h>
 #include <vector>
 #include "sg_filter.h"
+#include <omp.h>
+// #include "svm_grad.h"
 #include <tinyxml2.h>
 
 using namespace Eigen;
@@ -112,7 +114,7 @@ class QPIKSolver
 {
 public:
     void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint);
-    // void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
+    void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
     void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq);
 	void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq,	VectorXd UDq,VectorXd LDq);
     void FinalizeInitialization();
@@ -169,7 +171,7 @@ private:
 	double muP_;
 	double etaP_;
 
-    // SVMGrad     svmBoundary_;
+    // SVMGrad::SVMGrad     svmBoundary_;
 
 	double		Gamma_;
 	VectorXd	DGamma_;
