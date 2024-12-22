@@ -10,7 +10,7 @@ include_directories(/home/sophia/sg_differentiation/include)
 set(SOURCES
     src/runSolver.cpp
     src/QPIKSolver.cpp
-    /home/sophia/sg_differentiation/src/sg_filter.cpp 
+    external/sg_differentiation/src/sg_filter.cpp 
 )
 
 add_executable(QPIK ${SOURCES})

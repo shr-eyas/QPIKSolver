@@ -67,7 +67,7 @@ void QPIKSolver::Initialize(int NumOfRobots, double dt, SolverType type, SolverL
     etaP_ = 0.9;
     SuperConstraint_ = SuperConstraint;
     SolverNumerical_ = CVXgen1;
-    if (saveThePerformace){	myfile.open ("build/IKSolverPerformaceDynamical.txt");}
+    if (saveThePerformace){	myfile.open ("external/results/IKSolverPerformaceDynamical.txt");}
 	considerCollision = false;
 }
 
