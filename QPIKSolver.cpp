@@ -55,7 +55,7 @@ void QPIKSolver::Initialize(int NumOfRobots, double dt, SolverType type, SolverL
 {
     NumOfRobots_ = NumOfRobots;
     dt_ = dt;
-    Robots_ = new SRobotIK[NumOfRobots_];
+    Robots_ = new RobotModel[NumOfRobots_];
     SolverLevel_ = level;
     SolverType_ = type;
 
@@ -101,7 +101,60 @@ inline void QPIKSolver::restartTheRobots()
 	}
 }
 
-void QPIKSolver::PrintRobot(SRobotIK Robot)
+void QPIKSolver::setJacobian(int index, MatrixXd Jacobian)
+{
+	if ((Robots_[index].Jacobian.cols()!=Jacobian.cols()) || (Robots_[index].Jacobian.rows()!=Jacobian.rows()))
+	{
+		cout << "Jacobian of " << index << "th robot is wrong." << endl;
+		cout << "The input Jacobian dimension " << Jacobian.rows() << " * " << Jacobian.cols() << endl;
+		cout << "The robot Jacobian dimension " << Robots_[index].Jacobian.rows() << " * " << Robots_[index].Jacobian.cols() << endl;
+		ERROR();
+	}
+	if (Robots_[index].jacobianIsSet==true)
+	{
+		cout << "Jacobian of " << index << "th robot is already set." << endl;
+		ERROR();
+	}
+	Robots_[index].Jacobian=Jacobian;
+	Robots_[index].jacobianIsSet=true;
+}
+
+VectorXd QPIKSolver::OmegaProjector(VectorXd Input, VectorXd Upper, VectorXd Lower)
+{
+    if (Input.rows()!=Upper.rows() || (Input.rows()!=Lower.rows()))
+    {
+        cout << "Problem with Omega Projector." << endl;
+        cout << "Input dimension: " << Input.rows() << " Upper dimension: " <<Upper.rows() << " Lower dimension: " << Lower.rows() << endl;
+		ERROR();
+    }
+
+    VectorXd output(Input.rows());      // Create a vector of the same size as Input 
+    for (int i=0; i<Input.rows(); i++)
+    {
+        output(i) = std::min(std::max(Input(i), Lower(i)), Upper(i));
+    }
+    return Input;
+}
+
+void QPIKSolver::setDesired(int index, VectorXd DesiredEnd)
+{
+    if (Robots_[index].DesiredEnd.rows()!=DesiredEnd.rows())
+    {
+        cout << "Desired end of " << index << "th robot is wrong." << endl;
+		cout << "The input Desired end dimension " << DesiredEnd.rows() << endl;
+		cout << "The robot Desired end dimension " << Robots_[index].DesiredEnd.rows() << endl;
+		ERROR();
+    }
+    if (Robots_[index].desiredPositionIsSet==true)
+	{
+		cout << "Desired position of " << index << "th robot is already set." << endl;
+		ERROR();
+	}
+    Robots_[index].DesiredEnd = DesiredEnd;
+	Robots_[index].desiredPositionIsSet=true;
+}
+
+void QPIKSolver::PrintRobot(RobotModel Robot)
 {
 	cout << "Printing of " << Robot.index << "th robot." << endl;
 	cout << "Number of Links: " << Robot.numLinks << endl;
@@ -113,11 +166,4 @@ void QPIKSolver::PrintRobot(SRobotIK Robot)
 	cout << "W: " << endl; cout << Robot.W << endl;
 	cout << "UDDp: " << endl; cout << Robot.UDDq << endl;
 	cout << "UDDp: " << endl; cout << Robot.UDDq << endl;
-}
-
-void QPIKSolver::loadDefaultData()
-{
-    for (int i = 0; i < DimensionConstraint_; i++)
-        for (int j = 0; j < DimensionQ_; j++)
-            params.J[i+j*DimensionConstraint_] = CEQP_(i, j);
 }
