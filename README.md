@@ -4,9 +4,13 @@ QPIKSolver is a software package designed to solve the centralized inverse kinem
 
 ##  Dependencies
 Eigen http://eigen.tuxfamily.org/index.php?title=Main_Page
+
 SVMGrad https://github.com/nbfigueroa/SVMGrad.git
+
 SGDifferentiation https://github.com/epfl-lasa/sg_differentiation.git
+
 Nlopt http://ab-initio.mit.edu/wiki/index.php/NLopt
+
 CVXGEN http://cvxgen.com/docs/index.html 
 
 ## Features
