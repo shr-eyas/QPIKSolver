@@ -109,8 +109,9 @@ class QPIKSolver
 {
 public:
     void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint);
+    void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
     void InitializeRobot(int index, int numLinks, int numConstraints, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq);
-	void InitializeRobot(int index,int numLinks,int numConstraints,MatrixXd W,VectorXd Uq, VectorXd Lq,	VectorXd UDq,VectorXd LDq);
+	void InitializeRobot(int index, int numLinks, int numConstraints, MatrixXd W, VectorXd Uq, VectorXd Lq,	VectorXd UDq,VectorXd LDq);
     void FinalizeInitialization();
 	void setJacobian(int index, MatrixXd Jacobian);
 	void setJacobianLinks(int index, JacobianS Jacobian);
