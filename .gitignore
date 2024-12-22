@@ -1,0 +1,14 @@
+# Ignore build directory
+/build/
+
+# Ignore executable files
+*.exe
+*.out
+*.o
+*.a
+
+# Ignore IDE-specific files (for example, Visual Studio or IntelliJ IDEA)
+.vscode/
+.idea/
+*.user
+*.swp
