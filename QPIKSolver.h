@@ -44,7 +44,7 @@ struct JacobianS
     Vector3d LinkPos[7];
 };
 
-struct SRobotIK {
+struct RobotModel {
     bool jacobianIsSet;                     // Boolean flag to check if the Jacobian matrix has been set
     bool desiredPositionIsSet;              // Boolean flag to check if the desired position has been set
     bool stateIsSet;                        // Boolean flag to check if the robot state is set
@@ -122,7 +122,7 @@ public:
 
 private:
     void        ERROR();
-    void        PrintRobot(SRobotIK Robot);
+    void        PrintRobot(RobotModel Robot);
     VectorXd	OmegaProjector(VectorXd Input, VectorXd Upper, VectorXd Lower);
     inline void ConstructVel();
     inline void ConstructBoundariesVel();
@@ -134,7 +134,7 @@ private:
     SolverType SolverType_;
     SolverLevel SolverLevel_;
     SolverNumerical SolverNumerical_;
-    SRobotIK *Robots_;
+    RobotModel *Robots_;
 
     int NumOfRobots_;
     int DimensionConstraint_;
