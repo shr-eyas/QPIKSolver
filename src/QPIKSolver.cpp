@@ -5,6 +5,9 @@ IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 int order = 3;
 int winlen = 20;
 
+int MaxNumOfRobots = 3;
+bool saveThePerformace = true;
+
 /*
  * @brief Objective function used in optimization routines.
  * 
@@ -67,19 +70,38 @@ void QPIKSolver::Initialize(int NumOfRobots, double dt, SolverType type, SolverL
 	considerCollision = false;
 }
 
-void QPIKSolver::InitializeRobot(int index, int numLinks, int numConstraints, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq)
+// void QPIKSolver::Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename)
+// {
+// 	NumOfRobots_ = NumOfRobots;
+//     dt_ = dt;
+//     Robots_ = new RobotModel[NumOfRobots_];
+//     SolverLevel_ = level;
+//     SolverType_ = type;
+// 	muP_ = 20;
+//     etaP_ = 0.9;
+//     SuperConstraint_ = SuperConstraint;
+// 	SolverNumerical_ = CVXgen1;
+// 	if (saveThePerformace){	myfile.open ("IK_solver_performace_Dynamical.txt");}
+
+// 	svmBoundary_.loadModel(svmFilename);
+// 	svmBoundary_.preComputeKernel(true);
+// 	considerCollision = true;
+//     lambda = 5;
+// }
+
+
+void QPIKSolver::InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq)
 {
-	InitializeRobot(index, numLinks, numConstraints, W, Uq, Lq, UDq, LDq);
+	InitializeRobot(index, numLinks, taskDOF, W, Uq, Lq, UDq, LDq);
 
     if (SolverLevel_ == AccelerationLevel)
     {
         if((UDDq.rows() != numLinks) || (LDDq.rows() != numLinks))
         {
-            cout <<"Initialization of "<< index <<"th robot is wrong."<< endl;
-			cout <<"N_links "<< numLinks<<endl;
-			cout <<"U_DDp: "<< endl; cout << UDDq << endl;
-			cout <<"U_DDp: "<< endl; cout << UDDq <<endl;
-			cout <<"Initialization of "<< index <<"th robot is wrong."<< endl;
+            cout << "Initialization of "<< index << "th robot is wrong." << endl;
+			cout << "Number of links: " << numLinks << endl;
+			cout << "UDDq: " << UDDq << endl;
+			cout << "LDDq: " << LDDq << endl;
 			ERROR();
         }
         else
@@ -87,6 +109,79 @@ void QPIKSolver::InitializeRobot(int index, int numLinks, int numConstraints, Ma
             Robots_[index].UDDq = UDDq;
             Robots_[index].LDDq = LDDq;
         }
+    }
+    PrintRobot(Robots_[index]);
+}
+
+/*
+ * @brief Declare the parameters of Robots
+ * 
+ * @param index 
+ * @param numLinks Number of the links.
+ * @param taskDOF Dimensionality of the end-effector's task space.
+ * @param W Weight matrix for scaling joint contribution in IK. 
+ * @param Uq Upper bound of the joints' positions.
+ * @param Lq Lower bound of the joints' positions.
+ * @param UDq Upper bound of the joints' velocities.
+ * @param LDq Lower bound of the joints' velocities.
+ */
+void QPIKSolver::InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq)
+{
+    if (index > NumOfRobots_-1)
+    {
+        cout << "Initialization of " << index << "th robot is wrong." << endl;
+		cout << "Index: " << index << " Max number of robot: " << NumOfRobots_-1 << endl;
+		ERROR();
+    }
+
+    Robots_[index].index = index;
+    Robots_[index].numLinks = numLinks;
+    Robots_[index].taskDOF = taskDOF;
+
+    Robots_[index].W.resize(Robots_[index].numLinks, Robots_[index].numLinks);
+	Robots_[index].Jacobian.resize(Robots_[index].taskDOF, Robots_[index].numLinks);
+
+    Robots_[index].Uq.resize(Robots_[index].numLinks);
+	Robots_[index].Lq.resize(Robots_[index].numLinks);
+
+	Robots_[index].UDq.resize(Robots_[index].numLinks);
+	Robots_[index].LDq.resize(Robots_[index].numLinks);
+
+	Robots_[index].UDDq.resize(Robots_[index].numLinks);
+	Robots_[index].LDDq.resize(Robots_[index].numLinks);
+
+	Robots_[index].q.resize(Robots_[index].numLinks);
+	Robots_[index].Dq.resize(Robots_[index].numLinks);
+    Robots_[index].DesiredEnd.resize(Robots_[index].taskDOF);
+
+    for (int i=0; i<7; i++)
+	{
+		Robots_[index].JacobianR.Jacobian[i].resize(3, 1+i); 
+        Robots_[index].JacobianR.Jacobian[i].setZero();
+		Robots_[index].JacobianR.Jacobian7[i].resize(3, 7); 
+        Robots_[index].JacobianR.Jacobian7[i].setZero();
+	}
+
+    if ((Uq.rows()!=numLinks) || (Lq.rows()!=numLinks) || (LDq.rows()!=numLinks)||(UDq.rows()!=numLinks) || (W.cols()!=numLinks) || (W.rows()!=numLinks))
+	{   
+        cout << "Initialization of "<< index << "th robot is wrong." << endl;
+        cout << "Number of links: " << numLinks << endl;
+        cout << "Uq: " << Uq << endl;
+        cout << "Lq: " << Lq << endl;
+        cout << "UDq: " << UDq << endl;
+        cout << "LDq: " << LDq << endl;
+        cout << "W: " << W << endl;
+        ERROR();
+	}
+    else
+    {
+        Robots_[index].W = W;
+		Robots_[index].Uq = Uq;
+		Robots_[index].Lq = Lq;
+		Robots_[index].UDq = UDq;
+		Robots_[index].LDq = LDq;
+		Robots_[index].LDDq.setZero();
+		Robots_[index].UDDq.setZero();
     }
     PrintRobot(Robots_[index]);
 }
@@ -154,16 +249,21 @@ void QPIKSolver::setDesired(int index, VectorXd DesiredEnd)
 	Robots_[index].desiredPositionIsSet=true;
 }
 
+void QPIKSolver::ERROR()
+{
+	
+}
+
 void QPIKSolver::PrintRobot(RobotModel Robot)
 {
-	cout << "Printing of " << Robot.index << "th robot." << endl;
+	cout << "Printing parameters of Robot " << Robot.index + 1 << endl;
 	cout << "Number of Links: " << Robot.numLinks << endl;
-	cout << "Up: " << endl; cout << Robot.Uq << endl;
-	cout << "Lp: " << endl; cout << Robot.Lq << endl;
-	cout << "UDp: " << endl; cout << Robot.UDq << endl;
-	cout << "LDp: " << endl; cout << Robot.LDq << endl;
+	cout << "Upper limit of joint positions: " << endl; cout << Robot.Uq << endl;
+	cout << "Lower limit of joint positions: " << endl; cout << Robot.Lq << endl;
+	cout << "Upper limit of joint velocities: " << endl; cout << Robot.UDq << endl;
+	cout << "Lower limit of joint velocities: " << endl; cout << Robot.LDq << endl;
 	cout << "q: " << endl; cout << Robot.q << endl;
 	cout << "W: " << endl; cout << Robot.W << endl;
-	cout << "UDDp: " << endl; cout << Robot.UDDq << endl;
-	cout << "UDDp: " << endl; cout << Robot.UDDq << endl;
+	cout << "Upper limit of joint accelerations: " << endl; cout << Robot.UDDq << endl;
+	cout << "Lower limit of joint accelerations: " << endl; cout << Robot.UDDq << endl;
 }

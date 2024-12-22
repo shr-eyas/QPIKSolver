@@ -22,9 +22,11 @@
 #include <algorithm>
 #include <time.h>
 #include <vector>
+#include <tinyxml2.h>
 
 using namespace Eigen;
 using namespace std;
+using namespace tinyxml2;
 
 /*
 Format the appearance of matrix outputs for easy readability.
@@ -35,7 +37,7 @@ Example Usage:
     MatrixXd mat(r, c);
     std::cout << mat.format(CleanFmt) << std::endl;
 */
-IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+extern IOFormat CleanFmt;
 
 struct JacobianS
 {
@@ -48,9 +50,9 @@ struct RobotModel {
     bool jacobianIsSet;                     // Boolean flag to check if the Jacobian matrix has been set
     bool desiredPositionIsSet;              // Boolean flag to check if the desired position has been set
     bool stateIsSet;                        // Boolean flag to check if the robot state is set
-    int index;                              // Index of the robot in some list or collection
+    int index;                              // Index of the robot in some list
     int numLinks;                           // Number of links in the robot's kinematic chain
-    int numConstraints;                     // Number of constraints in the inverse kinematics problem
+    int taskDOF;                     // Number of constraints in the inverse kinematics problem
 
     MatrixXd W;                             // Weight matrix used for optimization or Jacobian-related computations
     MatrixXd Jacobian;                      // Jacobian matrix (relates joint velocities to end-effector velocity)
@@ -101,17 +103,17 @@ enum SolverNumerical {
     CVXgen2      // CVXgen is a solver for optimization problems, version 2.
 };
 
-int MaxNumOfRobots = 3;
+extern int MaxNumOfRobots;
 
-bool saveThePerformace = true;
+extern bool saveThePerformace;
 
 class QPIKSolver
 {
 public:
     void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint);
     void Initialize(int NumOfRobots, double dt, SolverType type, SolverLevel level, bool SuperConstraint, string svmFilename);
-    void InitializeRobot(int index, int numLinks, int numConstraints, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq);
-	void InitializeRobot(int index, int numLinks, int numConstraints, MatrixXd W, VectorXd Uq, VectorXd Lq,	VectorXd UDq,VectorXd LDq);
+    void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq, VectorXd UDq, VectorXd LDq, VectorXd UDDq, VectorXd LDDq);
+	void InitializeRobot(int index, int numLinks, int taskDOF, MatrixXd W, VectorXd Uq, VectorXd Lq,	VectorXd UDq,VectorXd LDq);
     void FinalizeInitialization();
 	void setJacobian(int index, MatrixXd Jacobian);
 	void setJacobianLinks(int index, JacobianS Jacobian);
